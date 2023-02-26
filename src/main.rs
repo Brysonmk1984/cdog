@@ -3,39 +3,75 @@ use clap::Parser;
 use math::hex_to_rgb::convert_hex_to_rgb;
 use math::rgb_to_hex::convert_rgb_to_hex;
 
+// TODO:
+// 1. figure out how to accept special characters as part of argument: "#"
+// 2. Figure out how how to accept () in a way where shell doesn't think I'm running a function
+// 3. Remove large matches in math section and replace with "as u8"
+// 4. Clean up all the unwrap()
+
+enum InputTypes {
+    HEX,
+    RGB,
+}
+
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
-struct Cli {
-    /// Optional name to operate on
-    name: Option<String>,
+struct Args {
+    #[arg(short = 'x', long)]
+    /// Optional flag indicating a hexidecimal color is being entered
+    hex: bool,
+    #[arg(short, long)]
+    /// Optional flag indicating an RGB value is being entered
+    rgb: bool,
+    /// Hex or RGB value to operate on
+    value: Option<String>,
 }
 
 fn main() {
-    let cli = Cli::parse();
+    let cli = Args::parse();
 
-    // You can check the value provided by positional arguments, or option arguments
-    if let Some(name) = cli.name.as_deref() {
-        println!("Value for name: {name}");
+    if let Some(value) = cli.value.as_deref() {
+        // Determine Color mode based on argument flags
+        let mode = if cli.rgb {
+            Some(InputTypes::RGB)
+        } else if cli.hex {
+            Some(InputTypes::HEX)
+        } else {
+            // if no flag was provided, try to determine color mode by the text input
+            let mode_evaluation = determine_format(value);
+            if let Some(InputTypes::HEX) = mode_evaluation {
+                println!("Color Mode evaluated to be HEX")
+            } else if let Some(InputTypes::RGB) = mode_evaluation {
+                println!("Color Mode evaluated to be RGB")
+            }
+            mode_evaluation
+        };
+
+        // Based on the color mode, do appropriate color conversion
+        let result = match mode {
+            Some(InputTypes::RGB) => convert_rgb_to_hex(value),
+            Some(InputTypes::HEX) => convert_hex_to_rgb(value),
+            None => panic!("Unable to determine color mode!"),
+        };
+
+        println!("INPUT: {} -> RESULT: {}", value, result);
+    } else {
+        println!("--> Please enter an RGB or HEX color value");
+    }
+}
+
+// Used to try and determine color mode by the string input passed in
+fn determine_format(input: &str) -> Option<InputTypes> {
+    let result: Option<InputTypes>;
+    if input.chars().nth(0).unwrap() == '#' || input.chars().all(char::is_alphanumeric) {
+        result = Some(InputTypes::HEX);
+    } else if let Some(_) = input.find(",") {
+        result = Some(InputTypes::RGB);
+    } else if let Some(_) = input.find(".") {
+        result = Some(InputTypes::RGB);
+    } else {
+        result = None;
     }
 
-    // HEX TO RGB
-    let my_hex = "0A543F";
-    let rgb_tuple = convert_hex_to_rgb(my_hex);
-    println!("HEX TO RGB: {:?}", rgb_tuple);
-
-    // RGB TO HEX
-    let my_rgb = "rgb(6, 58, 119)";
-    let converted_hex_value = convert_rgb_to_hex(my_rgb);
-    println!("RGB TO HEX: {}", converted_hex_value);
-
-    println!("Hello {:?}!", cli.name)
-
-
-
-    let leo = 'leo';
-
-
-
-
-
+    result
 }
