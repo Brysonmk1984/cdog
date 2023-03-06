@@ -4,9 +4,6 @@ use math::hex_to_rgb::convert_hex_to_rgb;
 use math::rgb_to_hex::convert_rgb_to_hex;
 
 // TODO:
-// 1. figure out how to accept special characters as part of argument: "#"
-// 2. Figure out how how to accept () in a way where shell doesn't think I'm running a function
-// 3. Remove large matches in math section and replace with "as u8"
 // 4. Clean up all the unwrap()
 
 enum InputTypes {

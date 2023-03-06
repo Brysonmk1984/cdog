@@ -15,13 +15,13 @@ enum HexAlpha {
 
 // Return numerical value from hex digit
 pub fn get_hex_digit_value(val: &str) -> Option<u8> {
-    match val {
-        "A" => Some(HexAlpha::A as u8),
-        "B" => Some(HexAlpha::B as u8),
-        "C" => Some(HexAlpha::C as u8),
-        "D" => Some(HexAlpha::D as u8),
-        "E" => Some(HexAlpha::E as u8),
-        "F" => Some(HexAlpha::F as u8),
+    match val.to_lowercase().as_str() {
+        "a" => Some(HexAlpha::A as u8),
+        "b" => Some(HexAlpha::B as u8),
+        "c" => Some(HexAlpha::C as u8),
+        "d" => Some(HexAlpha::D as u8),
+        "e" => Some(HexAlpha::E as u8),
+        "f" => Some(HexAlpha::F as u8),
         "0" => Some(0),
         "1" => Some(1),
         "2" => Some(2),
