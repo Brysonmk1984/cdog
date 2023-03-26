@@ -5,6 +5,7 @@ use math::rgb_to_hex::convert_rgb_to_hex;
 
 // TODO:
 // 4. Clean up all the unwrap()
+// 5. Make hex work with just 3 values
 
 enum InputTypes {
     HEX,
@@ -47,7 +48,7 @@ fn main() {
         // Based on the color mode, do appropriate color conversion
         let result = match mode {
             Some(InputTypes::RGB) => convert_rgb_to_hex(value),
-            Some(InputTypes::HEX) => convert_hex_to_rgb(value),
+            Some(InputTypes::HEX) => convert_hex_to_rgb(value.to_string()),
             None => panic!("Unable to determine color mode!"),
         };
 
